@@ -1,0 +1,58 @@
+sudo apt-get install libcgroup1
+sudo apt install cgroup*
+
+cgcreate -g memory:mem1
+ls /sys/fs/cgroup/memory/mem1/
+cgset -r memory.limit_in_bytes=$((100*1024)) mem1
+cat /sys/fs/cgroup/memory/mem1/memory.limit_in_bytes
+man stress
+
+Hard limit:
+
+cgexec -g memory:mem1 stress  --vm 1 --vm-bytes 1000K --timeout 10s
+stress: info: [7421] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: FAIL: [7421] (415) <-- worker 7422 got signal 9
+stress: WARN: [7421] (417) now reaping child worker processes
+stress: FAIL: [7421] (451) failed run completed in 1s
+
+cgexec -g memory:mem1 stress  --vm 1 --vm-bytes 40K --timeout 10s
+stress: info: [7429] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: info: [7429] successful run completed in 10s
+
+gexec -g memory:mem1 stress  --vm 1 --vm-bytes 1K --timeout 10s
+stress: info: [7571] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: info: [7571] successful run completed in 10s
+
+cgexec -g memory:mem1 stress  --vm 1 --vm-bytes 101K --timeout 10s
+stress: info: [7577] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: FAIL: [7577] (415) <-- worker 7578 got signal 9
+stress: WARN: [7577] (417) now reaping child worker processes
+stress: FAIL: [7577] (451) failed run completed in 1s
+
+
+
+Soft Deadline:
+cgset -r memory.soft_limit_in_bytes=$((100*1024)) mem1 
+
+gexec -g memory:mem1 stress  --vm 1 --vm-bytes 150K --timeout 10s
+stress: info: [7571] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: info: [7571] successful run completed in 10s
+
+
+
+
+
+
+
+
+=====================cgexec -g memory:mem1 stress  --vm 1 --vm-bytes 128M --timeout 10s
+stress: info: [6725] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: info: [6725] successful run completed in 10s
+
+cgexec -g memory:mem1 stress  --vm 1 --vm-bytes 1M --timeout 10s
+stress: info: [7374] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+stress: info: [7374] successful run completed in 10s
+
+
+
+
